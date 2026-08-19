@@ -31,13 +31,13 @@ Ziel ist die reproduzierbare, automatisierte Bereitstellung eines Medienserver-S
 ### 3.1 Im Umfang enthalten
 - Rippen der DVDs zu verlustfreien Dateien mit MakeMKV.
 - Einbindung des Medienspeichers auf dem Host (Festplatte 4T) und durchreichen in den Container.
-- Erstellung eines LXC-Containers per Ansible-Playbook (Provisionierung vom Inventar aus.
+- Erstellung eines LXC-Containers per Ansible-Playbook (Provisionierung vom Inventar aus).
 - Installation, Grundkonfiguration und Bibliotheks-Einrichtung von Jellyfin.
-- iGPU-Passthrough Hardware -Transcoding über die integrierte GPU
+- iGPU-Passthrough Hardware-Transcoding über die integrierte GPU
 - Lokaler Zugriff über den Browser sowie native Apps
 - Fernzugriff über WG (sep. LXC, da schon existiert im Homelab), Portfreigabe und Anpassung im Router und Netzwerk.
 - Benutzerverwaltungen in Jellyfin mit Bibliotheks-Berechtigungen.
-- Automatisierungs- / Welcome-Skript: WG-Peer + Jellyfin Nutzer v+ PDF Ausgabe von QR und Zugangsdaten
+- Automatisierungs- / Welcome-Skript: WG-Peer + Jellyfin Nutzer + PDF Ausgabe von QR und Zugangsdaten
 
 ### 3.2 Nicht im Umfang enthalten
 - Hochverfügbarkeit / Cluster-Betrieb mehrerer Nodes
@@ -76,7 +76,7 @@ Remote-Clients werden sich über einen VPN-Tunnel auf die Umgebung verbinden, da
 ![Provisionierung](Pictures/Provisionierung.png) 
 
 ## 5. Datenfluss
-- **Fernzugriff:** Remote-Client - WG-App baut Tunnel - Router leitet UDP 51820 an WG-LXC weiter WG-LXC entschlüsselt - Jellyfin wird intern per HTTP angesprochen
+- **Fernzugriff:** Remote-Client - WG-App baut Tunnel - Router leitet UDP 51820 an WG-LXC weiter -  WG-LXC entschlüsselt - Jellyfin wird intern per HTTP angesprochen
 - **Lokaler Zugriff:** LAN-Client - direkt per HTTP auf den Jellyfin-Server ohne WG 
 - **Wiedergabe:** Jellyfin prüft die Client-Fähigkeiten und liefert die gewünschte Wiedergabe
 - **Speicher:** Medien liegen auf Festplatte am Host, werden als Bind-Mount schreib-/lesegerecht in den Jellyfin-LXC durchgereicht
@@ -137,23 +137,38 @@ Das Projekt gilt als erfolgreich, wenn alle Anforderungen F1-F12 und N1-N5 besta
 
 ## 10.l Voraussetzungen, Annahmen und Risiken 
 
-| Thema              | Beschreibung                                                                                             | Massnahme                                                                                                                                                                                                |
-|--------------------|----------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Dynamische IP      | Die Heim-IP wechselt normalerweise unregelmässig, Remote-Clients müssen den Endpunkt zuverlässig finden. | Dynamic-DNS-Dienst (DDNS) einrichten. (existiert bereits)                                                                                                                                                |
-| Hardware | Transcoding benötigt eine iGPU mit QuickSync sowie ausreichend RAM/Disk. | Vorhanden: HP EliteDesk 800 G5 mit Intel-CPU inkl. iGPU (UHD Graphics 630, QuickSync-fähig), 32 GB RAM, 500 GB interne SSD (System + Container), 4 TB externe WD-Festplatte (Mediathek). |                                                                                                                                                     |
-| Upload-Bandbreite  | Remote-Transcoding ist bandbreitenempfindlich, 4K über schwachen Upload führt zu Buffering.              | Zielauflösung/Bitrate für Remote begrenzen.                                                                                                                                                              |
+| Thema              | Beschreibung                                                                                             | Massnahme                                                                                                                                                                                               |
+|--------------------|----------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dynamische IP      | Die Heim-IP wechselt normalerweise unregelmässig, Remote-Clients müssen den Endpunkt zuverlässig finden. | Dynamic-DNS-Dienst (DDNS) einrichten. (existiert bereits)                                                                                                                                               |
+| Hardware | Transcoding benötigt eine iGPU mit QuickSync sowie ausreichend RAM/Disk. | Vorhanden: HP EliteDesk 800 G5 mit Intel-CPU inkl. iGPU (UHD Graphics 630, QuickSync-fähig), 32 GB RAM, 500 GB interne SSD (System + Container), 4 TB externe WD-Festplatte (Mediathek).                |                                                                                                                                                     |
+| Upload-Bandbreite  | Remote-Transcoding ist bandbreitenempfindlich, 4K über schwachen Upload führt zu Buffering.              | Zielauflösung/Bitrate für Remote begrenzen.                                                                                                                                                             |
 | Rechtliches        | Digitalisiert werden ausschliesslich eigene, physisch vorhandene Medien zum privaten Gebrauch.           | In der Schweiz ist die Privatkopie erlaubt, die Umgehung technischer Schutzmassnahmen ist der diskutierte Punkt. In Diesem Fall, wird dies kein Problem sein, da der Jellyfin nur Intern erreichbar ist. |
-| Portweiterleitung  | Der Router muss eine portweiterleitung erlauben.                                                         | Überprüfung im Gui des Routers ob eine Portweiterleitung möglich ist. (Allenfalls Entwickler Optionen aktivieren)                                                                                        |  
+| Portweiterleitung  | Der Router muss eine portweiterleitung erlauben.                                                         | Überprüfung im Gui des Routers ob eine Portweiterleitung möglich ist. (Allenfalls Entwickler Optionen aktivieren)                                                                                       |  
 
 ## 11. Glossar
 
-| Begriff     | Bedeutung                                                                          |
-|-------------|------------------------------------------------------------------------------------|
-| LXC         | Linux Container, teilt den Kernel des Hosts, massiv leichtgewichtiger als eine VM. |
-| Bind-Mount  | Einblenden eines Host-Verzeichnisses in einen Container ohne Kopieren.             |
-| Transcoding | Echtzeit-Umwandlung von Video/Audio in ein vom Client unterstütztes Format.        |
-| Direct Play | Unveränderte Auslieferung der Originaldatei (schnellste Variante).                 |
-| WG          | WireGuard - Modernes, schlankes VPN-Protokoll, nutzt einen einzelnen UDP-Port.     |
-
-
+| Begriff | Bedeutung |
+|---------|-----------|
+| LXC | Linux Container, teilt den Kernel des Hosts, massiv leichtgewichtiger als eine VM. |
+| Bind-Mount | Einblenden eines Host-Verzeichnisses in einen Container ohne Kopieren. |
+| Proxmox VE | Virtualisierungsplattform auf Debian-Basis, verwaltet VMs und LXC-Container. |
+| pct | Kommandozeilen-Werkzeug von Proxmox zum Erstellen und Steuern von LXC-Containern. |
+| Ansible | Automatisierungswerkzeug, das Systeme anhand eines Inventars und Playbooks (Rollen/Tasks) reproduzierbar bereitstellt. |
+| Inventar | Liste der von Ansible verwalteten Ziele (hier: Host und Container). |
+| Playbook | Ansible-Datei, die die auszuführenden Schritte (Tasks) beschreibt. |
+| WireGuard (WG) | Modernes, schlankes VPN-Protokoll, nutzt einen einzelnen UDP-Port. |
+| Peer | Gegenstelle in einem WireGuard-Tunnel (Client oder Server). |
+| Keypair | Schlüsselpaar aus privatem und öffentlichem Schlüssel; Grundlage des WireGuard-Schlüsselaustauschs. |
+| DDNS | Dynamic DNS, hält einen festen Hostnamen aktuell, wenn sich die öffentliche IP ändert. |
+| Portweiterleitung | Weiterleitung eines Ports vom Router an ein internes Gerät (hier: UDP 51820 → WG-LXC). |
+| Jellyfin | Quelloffener Medienserver, der die Bibliothek verwaltet und an Clients streamt. |
+| REST-API | Programmier-Schnittstelle von Jellyfin, über die das Skript Nutzer anlegt und verwaltet. |
+| Transcoding | Echtzeit-Umwandlung von Video/Audio in ein vom Client unterstütztes Format. |
+| Direct Play | Unveränderte Auslieferung der Originaldatei (schnellste Variante). |
+| iGPU | In die CPU integrierte Grafikeinheit, hier für Hardware-Transcoding genutzt. |
+| QuickSync | Intel-Technologie zur hardwarebeschleunigten Video-Umwandlung auf der iGPU. |
+| FFmpeg | Werkzeug, das Jellyfin im Hintergrund für das Transcoding einsetzt. |
+| SQLite | In Jellyfin eingebettete Datenbank für Bibliotheks- und Nutzerdaten. |
+| MakeMKV | Programm zum verlustfreien Auslesen (Rippen) von DVDs in MKV-Dateien. |
+| vzdump | Proxmox-Werkzeug zum Sichern kompletter Container inkl. Konfiguration. |
 
