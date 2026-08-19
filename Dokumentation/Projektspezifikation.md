@@ -1,7 +1,6 @@
 # Projektspezifikation
 
-> Selbst gehosteter Medienserver im eigenen Homelab auf Proxmox VE 
->
+> Selbst gehosteter Medienserver im eigenen Homelab auf Proxmox VE
 > Autor: Manuel Sager - Schule: Teko Bern - Modul: Netzwerktechnologien
 
 
@@ -30,7 +29,6 @@ Ziel ist die reproduzierbare, automatisierte Bereitstellung eines Medienserver-S
 
 ## 3. Umfang und Abgrenzung
 ### 3.1 Im Umfang enthalten
-
 - Rippen der DVDs zu verlustfreien Dateien mit MakeMKV.
 - Einbindung des Medienspeichers auf dem Host (Festplatte 4T) und durchreichen in den Container.
 - Erstellung eines LXC-Containers per Ansible-Playbook (Provisionierung vom Inventar aus.
@@ -50,7 +48,7 @@ Ziel ist die reproduzierbare, automatisierte Bereitstellung eines Medienserver-S
 Der Proxmox-Server (Host) bildet die Virtualisierungsebene. WireGuard und Jellyfin laufen in getrennten LXC-Containern um eine klare Trennung von Netzwerk-Funktion und Anwendung zu gewährleisten. Ausserdem besteht bereits das Setup eines LXC mit WireGuard auf dem Proxmox-Server.
 Remote-Clients werden sich über einen VPN-Tunnel auf die Umgebung verbinden, darin wird Jellyfin dann direkt angesprochen. Die Festplatte sowie die iGPU liegen auf dem Host und werden direkt in den LXC mit Jellyfin durchgereicht. 
 
- ![Systemarchitektur](Pictures/Systemarchitektur.svg) 
+ ![Systemarchitektur](Pictures/Systemarchitektur.png) 
 
 ### 4.1 Komponentenübersicht
 | Komponente | Rolle | Technologie                                     |
@@ -75,7 +73,6 @@ Remote-Clients werden sich über einen VPN-Tunnel auf die Umgebung verbinden, da
 6. Fehlerbehandlung: existiert der Nutzer bereits, sauberer Abbruch.
 
 ### 4.3 Provisionierung / Automatisierungsarchitektur
-
 ![Provisionierung](Pictures/Provisionierung.png) 
 
 ## 5. Datenfluss
